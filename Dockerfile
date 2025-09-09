@@ -14,4 +14,4 @@ COPY ./app /code/app
 # 5. 서버 실행
 # 포트 8000번으로, 외부의 모든 IP로부터의 접속을 허용하여 서버를 실행합니다.
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${PORT}"]
