@@ -3,14 +3,14 @@ name: Deploy LangChain Server to Google Cloud Run
 on:
   push:
     branches:
-      - master # comfy-langchain 리포지토리의 메인 브랜치
+      - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
-      id-token: 'write' # Workload Identity Federation에 필요
+      id-token: 'write'
 
     steps:
       - name: Checkout code
@@ -27,12 +27,11 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v2'
 
       - name: Build and Push Docker image
-        # Cloud Build를 사용하여 이미지 빌드 및 푸시
         run: |
           gcloud builds submit . \
             --config cloudbuild.yaml \
             --project ${{ secrets.GCP_PROJECT_ID }} \
-            --substitutions=COMMIT_SHA=${{ github.sha }} # COMMIT_SHA를 cloudbuild.yaml로 전달
+            --substitutions=COMMIT_SHA=${{ github.sha }}
 
       - name: Deploy to Cloud Run
         id: deploy
@@ -42,7 +41,7 @@ jobs:
             --platform managed \
             --region asia-northeast1 \
             --project ${{ secrets.GCP_PROJECT_ID }} \
-            --ingress internal # 내부 서비스에서만 접근 허용
+            --ingress internal
             --set-env-vars OPENAI_API_KEY_SECRET_NAME=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/OPENAI_API_KEY/versions/latest \
             --set-env-vars INTERNAL_API_KEY_SECRET_NAME=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/INTERNAL_API_KEY/versions/latest \
             --update-secrets OPENAI_API_KEY=OPENAI_API_KEY_SECRET_NAME,INTERNAL_API_KEY=INTERNAL_API_KEY_SECRET_NAME
