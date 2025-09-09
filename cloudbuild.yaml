@@ -14,7 +14,7 @@ steps:
 
   # 2. 빌드된 이미지를 Artifact Registry에 푸시
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/surfai-services/surfai-langchain:$COMMIT_SHA']
+    args: ['push', 'gcr.io/${PROJECT_ID}/surfai-langchain:$COMMIT_SHA']
 
 # 배포에 사용할 이미지 목록
 images:
