@@ -40,7 +40,7 @@ jobs:
         id: deploy
         run: |
           gcloud run deploy surfai-langchain-service \
-            --image "asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/surfai-services/surfai-langchain:${{ github.sha }}" \
+            --image "gcr.io/${{ secrets.GCP_PROJECT_ID }}/surfai-langchain:${{ github.sha }}" \
             --platform managed \
             --region asia-northeast1 \
             --project ${{ secrets.GCP_PROJECT_ID }} \

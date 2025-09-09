@@ -7,7 +7,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/surfai-services/surfai-langchain:$COMMIT_SHA'
+      - 'gcr.io/${PROJECT_ID}/surfai-langchain:$COMMIT_SHA'
       - '.'
       - '-f'
       - 'Dockerfile'
@@ -18,4 +18,4 @@ steps:
 
 # 배포에 사용할 이미지 목록
 images:
-  - 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/surfai-services/surfai-langchain:$COMMIT_SHA'
+  - 'gcr.io/${PROJECT_ID}/surfai-langchain:$COMMIT_SHA'
