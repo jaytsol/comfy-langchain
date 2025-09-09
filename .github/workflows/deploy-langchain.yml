@@ -1,0 +1,50 @@
+name: Deploy LangChain Server to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - master # comfy-langchain 리포지토리의 메인 브랜치
+    paths:
+      - 'comfy-langchain/**' # comfy-langchain 디렉토리 내 변경 시에만 트리거
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write' # Workload Identity Federation에 필요
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: '${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}'
+          service_account: 'github-actions-deployer@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
+
+      - name: Set up gcloud CLI
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: Build and Push Docker image
+        # Cloud Build를 사용하여 이미지 빌드 및 푸시
+        run: |
+          gcloud builds submit . \
+            --config comfy-langchain/cloudbuild.yaml \
+            --project ${{ secrets.GCP_PROJECT_ID }} \
+            --substitutions=COMMIT_SHA=${{ github.sha }} # COMMIT_SHA를 cloudbuild.yaml로 전달
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        run: |
+          gcloud run deploy surfai-langchain-service \
+            --image "asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/surfai-services/surfai-langchain:${{ github.sha }}" \
+            --platform managed \
+            --region asia-northeast1 \
+            --project ${{ secrets.GCP_PROJECT_ID }} \
+            --ingress internal # 내부 서비스에서만 접근 허용
+            --set-env-vars OPENAI_API_KEY_SECRET_NAME=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/OPENAI_API_KEY/versions/latest \
+            --set-env-vars INTERNAL_API_KEY_SECRET_NAME=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/INTERNAL_API_KEY/versions/latest \
+            --update-secrets OPENAI_API_KEY=OPENAI_API_KEY_SECRET_NAME,INTERNAL_API_KEY=INTERNAL_API_KEY_SECRET_NAME

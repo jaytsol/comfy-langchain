@@ -1,0 +1,22 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  # 1. Docker 이미지 빌드
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/surfai-services/surfai-langchain:$COMMIT_SHA'
+      - '.'
+      - '-f'
+      - 'Dockerfile'
+    dir: 'comfy-langchain' # Dockerfile이 있는 위치를 명시
+
+  # 2. 빌드된 이미지를 Artifact Registry에 푸시
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/surfai-services/surfai-langchain:$COMMIT_SHA']
+
+# 배포에 사용할 이미지 목록
+images:
+  - 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/surfai-services/surfai-langchain:$COMMIT_SHA'
