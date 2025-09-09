@@ -5,7 +5,7 @@ on:
     branches:
       - master # comfy-langchain 리포지토리의 메인 브랜치
     paths:
-      - 'comfy-langchain/**' # comfy-langchain 디렉토리 내 변경 시에만 트리거
+      - '**' # 서브모듈 저장소 내의 모든 변경 사항에 대해 워크플로우를 트리거합니다.
 
 jobs:
   deploy:
