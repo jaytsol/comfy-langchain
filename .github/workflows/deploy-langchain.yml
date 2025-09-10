@@ -42,6 +42,4 @@ jobs:
             --region asia-northeast1 \
             --project ${{ secrets.GCP_PROJECT_ID }} \
             --ingress internal \
-            --set-env-vars OPENAI_API_KEY_SECRET_NAME=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/OPENAI_API_KEY/versions/latest \
-            --set-env-vars INTERNAL_API_KEY_SECRET_NAME=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/INTERNAL_API_KEY/versions/latest \
-            --update-secrets OPENAI_API_KEY=OPENAI_API_KEY_SECRET_NAME:latest,INTERNAL_API_KEY=INTERNAL_API_KEY_SECRET_NAME:latest
+            --update-secrets OPENAI_API_KEY=OPENAI_API_KEY:latest,INTERNAL_API_KEY=INTERNAL_API_KEY:latest
